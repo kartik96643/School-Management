@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Salary Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-header {
+      background: linear-gradient(45deg, #007bff, #0056b3);
+      padding: 1rem 1.5rem;
+    }
+    .card-header h3 {
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    h5 {
+      /* margin-top: 1rem; */
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #343a40;
+      border-left: 4px solid #007bff;
+      padding-left: 10px;
+    }
+    table {
+      background: #fff;
+    }
+    th {
+      background: #f1f3f5;
+    }
+    .summary-table td, .summary-table th,
+    .salary-table td, .salary-table th {
+      padding: 1rem;
+    }
+  
+    .section {
+      margin-bottom: 1rem;
+    }
+
+    @media print{
+        .no-print{
+            display: none;
+        }
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <div class="card shadow-lg">
+      <div class="card-header text-white">
+        <h3>Salary Report</h3>
+      </div>
+      <div class="card-body">
+
+        <!-- Staff Info -->
+        <div class="section">
+          <h5>Staff Information</h5>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <th scope="row" style="width: 25%;">Name</th>
+                <td><%= staff.name.charAt(0).toUpperCase() + staff.name.slice(1) %></td>
+              </tr>
+              <tr>
+                <th scope="row">Job Title</th>
+                <td><%= staff.jobTitle.charAt(0).toUpperCase() + staff.jobTitle.slice(1) %></td>
+              </tr>
+              <tr>
+                <th scope="row">Email</th>
+                <td><%= staff.email %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Attendance Summary -->
+        <div class="section">
+          <h5>Attendance Summary 
+            <small class="text-muted">( <%= startDate %> to <%= endDate %> )</small>
+          </h5>
+          <table class="table table-bordered text-center summary-table">
+            <thead>
+              <tr>
+                <th>Total Working Days</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Leave</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><%= summary.totalDays %></td>
+                <td class="text-success fw-bold"><%= summary.presentDays %></td>
+                <td class="text-danger fw-bold"><%= summary.absentDays %></td>
+                <td class="text-warning fw-bold"><%= summary.leaveDays %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Salary Calculation -->
+        <div class="section">
+          <h5>Salary Calculation</h5>
+          <table class="table table-bordered text-center salary-table">
+            <thead>
+              <tr>
+                <th>Per Day Salary</th>
+                <th>Payable Salary</th>
+                <th>Deductions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>₹ <%= salary.perDay %></td>
+                <td class="text-success fw-bold">₹ <%= salary.total %></td>
+                <td class="text-danger fw-bold">₹ <%= salary.deduction %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Download / Print Button -->
+        <div class="text-end">
+          <button onclick="window.print()" class="btn btn-primary no-print">Print Report</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

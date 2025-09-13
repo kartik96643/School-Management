@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salary Calculation Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f4f6f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .card {
+      max-width: 500px;
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .card-header {
+      background: #0d6efd;
+      color: white;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 15px;
+    }
+    .btn-custom {
+      width: 100%;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      padding: 10px;
+    }
+    .form-control {
+      border-radius: 10px;
+    }
+    .fade-message {
+      animation: fadeOut 2s ease forwards;
+      animation-delay: 2s;
+    }
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <% if(message){ %>
+      <div class="alert alert-success text-center m-3 fade-message">
+        <h6 class="mb-0"><%= message %></h6>
+      </div>
+    <% } %>
+
+    <div class="card-header">Salary Calculation</div>
+    <div class="card-body p-4">
+      <form action="/staffAttendance/salaryGenerator/form" method="POST">
+        
+        <!-- Start Date -->
+        <div class="mb-3">
+          <label for="startDate" class="form-label">Start Date</label>
+          <input type="date" class="form-control" id="startDate" name="startDate" required>
+        </div>
+
+        <!-- End Date -->
+        <div class="mb-3">
+          <label for="endDate" class="form-label">End Date</label>
+          <input type="date" class="form-control" id="endDate" name="endDate" required>
+        </div>
+
+        <!-- Job Title -->
+        <div class="mb-3">
+          <label for="jobTitle" class="form-label">Job Title</label>
+          <input type="text" class="form-control" id="jobTitle" name="jobTitle" placeholder="Enter job title" required>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Staff Email</label>
+          <input type="email" class="form-control" id="email" name="email" placeholder="Enter staff email" required>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary btn-custom">Generate Salary Slip</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

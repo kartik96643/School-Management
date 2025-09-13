@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Upload Class Results</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- General Styling --- */
+    :root {
+      --primary-color: #6a0dad;
+      /* Deep Violet */
+      --secondary-color: #8a2be2;
+      /* Blue Violet */
+
+      --text-color-dark: #2c003e;
+      --text-color-light: #f0e6fa;
+      --shadow-light: rgba(0, 0, 0, 0.1);
+      --shadow-medium: rgba(0, 0, 0, 0.2);
+      --shadow-strong: rgba(0, 0, 0, 0.3);
+      --border-radius-lg: 25px;
+      --border-radius-md: 15px;
+      --border-radius-sm: 8px;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--accent-color-2) 0%, var(--accent-color-1) 100%);
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-color-dark);
+      overflow-x: hidden;
+      /* Prevent horizontal scroll unless necessary for table */
+      line-height: 1.8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 0;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 1800px;
+      /* Increased max-width for the container */
+      width: 100%;
+    }
+
+    h2,
+    h3,
+    h4 {
+      font-weight: 700;
+      color: var(--primary-color);
+      text-shadow: 2px 2px 5px rgba(106, 13, 173, 0.2);
+      /* Deeper shadow for headings */
+      position: relative;
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+
+    h2::after,
+    h3::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 5px;
+    }
+
+    /* --- Form Section Styling (Glassmorphism inspired) --- */
+    .form-section {
+      background: rgba(255, 255, 255, 0.2);
+      /* More transparent background */
+      border-radius: var(--border-radius-lg);
+      padding: 40px;
+      box-shadow: 0 15px 40px var(--shadow-medium);
+      /* Stronger, diffused shadow */
+      backdrop-filter: blur(15px) saturate(180%);
+      /* Enhanced blur and saturation */
+      -webkit-backdrop-filter: blur(15px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      /* Lighter, more prominent border */
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      /* Smooth cubic-bezier transition */
+      margin-bottom: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .form-section::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      filter: blur(30px);
+      transition: all 0.5s ease-out;
+      z-index: -1;
+    }
+
+    .form-section:hover {
+      transform: translateY(-8px) scale(1.01);
+      /* Lift and subtle scale on hover */
+      box-shadow: 0 25px 60px var(--shadow-strong);
+    }
+
+    .form-section:hover::before {
+      transform: scale(1.2) translate(20px, 20px);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    label.form-label {
+      font-weight: 600;
+      color: var(--text-color-dark);
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    input.form-control,
+    select.form-select {
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(106, 13, 173, 0.3);
+      /* Border matching primary color */
+      padding: 12px 18px;
+      background-color: rgba(255, 255, 255, 0.7);
+      /* Slightly translucent */
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      color: var(--text-color-dark);
+      font-size: 1rem;
+    }
+
+    input.form-control:focus,
+    select.form-select:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.25rem rgba(138, 43, 226, 0.35);
+      /* Vibrantly matching glow */
+      background-color: rgba(255, 255, 255, 0.9);
+      /* More opaque on focus */
+      outline: none;
+    }
+
+    /* --- Alert Messages (Enhanced) --- */
+    .alert {
+      border-radius: var(--border-radius-md);
+      padding: 20px 25px;
+      margin-bottom: 25px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 5px 15px var(--shadow-light);
+      animation: fadeInFromTop 0.5s ease-out forwards;
+      background-clip: padding-box;
+      /* Fix for backdrop-filter on some browsers */
+    }
+
+    .alert-danger {
+      background: linear-gradient(45deg, #dc354599, #bb2d3b99);
+      /* Gradient background with transparency */
+      color: #fff;
+      border: 1px solid rgba(220, 53, 69, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .alert-danger p {
+      color: #fff;
+      margin-bottom: 0;
+    }
+
+    .alert-danger::before {
+      content: '❌';
+      font-size: 1.5rem;
+    }
+
+    .alert-success {
+      background: linear-gradient(45deg, #19875499, #15734799);
+      color: #fff;
+      border: 1px solid rgba(25, 135, 84, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .alert-success p {
+      color: #fff;
+      margin-bottom: 0;
+    }
+
+    .alert-success::before {
+      content: '✔️';
+      font-size: 1.5rem;
+    }
+
+    .alert-info {
+      background: linear-gradient(45deg, #0dcaf099, #0aa3c299);
+      color: #fff;
+      border: 1px solid rgba(13, 202, 240, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .alert-info p {
+      color: #fff;
+      margin-bottom: 0;
+    }
+
+    .alert-info::before {
+      content: 'ℹ️';
+      font-size: 1.5rem;
+    }
+
+
+    @keyframes fadeInFromTop {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* --- Button Styling (Neumorphism inspired with gradients) --- */
+    .btn {
+      border-radius: 50px;
+      font-weight: 600;
+      padding: 12px 25px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px rgba(255, 255, 255, 0.7);
+      /* Neumorphic effect */
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      /* More pronounced lift */
+      box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.15), -8px -8px 15px rgba(255, 255, 255, 0.8);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+      /* Press in effect */
+      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.15), inset -2px -2px 5px rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--text-color-light);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+    }
+
+    .btn-outline-secondary {
+      background-color: var(--accent-color-2);
+      color: var(--text-color-dark);
+      border: 1px solid var(--accent-color-1);
+    }
+
+    .btn-outline-secondary:hover {
+      background: linear-gradient(to right, #6c757d, #495057);
+      color: #fff;
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, #0dcaf0, #0aa3c2);
+      color: #fff;
+    }
+
+    .btn-info:hover {
+      background: linear-gradient(135deg, #0aa3c2, #0dcaf0);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #ffc107, #e0a800);
+      color: #fff;
+    }
+
+    .btn-warning:hover {
+      background: linear-gradient(135deg, #e0a800, #ffc107);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #198754, #157347);
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #157347, #198754);
+    }
+
+    .btn-outline-primary {
+      background-color: var(--accent-color-2);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+
+    .btn-outline-primary:hover {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--text-color-light);
+    }
+
+    .btn-outline-danger {
+      background-color: var(--accent-color-2);
+      color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+
+    .btn-outline-danger:hover {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    /* --- Utility & Placeholder --- */
+    .text-danger {
+      font-size: 0.9rem;
+      margin-top: 8px;
+      color: #dc3545;
+      font-weight: 500;
+    }
+
+    .d-grid {
+      margin-top: 20px;
+    }
+
+    ::placeholder {
+      color: rgba(44, 0, 62, 0.6);
+      /* Placeholder matches text color with opacity */
+      opacity: 1;
+      /* Ensure full opacity if browser default is different */
+    }
+
+    /* --- Table Styling (Minimal & Functional) --- */
+    .table-responsive {
+      margin-top: 40px;
+      overflow-x: auto;
+      /* Ensure horizontal scrolling for the table itself */
+    }
+
+    .table {
+      width: 100%;
+      /* Default width */
+      min-width: max-content;
+      /* Allow table to expand to fit content */
+      margin-bottom: 0;
+    }
+
+    .table th,
+    .table td {
+      vertical-align: middle;
+      padding: 0.75rem;
+      /* Standard Bootstrap padding */
+      border: 1px solid #dee2e6;
+      /* Standard Bootstrap border */
+      white-space: nowrap;
+      /* Prevent wrapping for better column integrity */
+    }
+
+    .table thead th {
+      text-align: left;
+      font-weight: 600;
+      /* Removed custom background/color */
+    }
+
+    /* Specific header column min-width for functional readability */
+    .table thead th:nth-child(1) {
+      width: 50px;
+      text-align: center;
+    }
+
+    /* # */
+    .table thead th:nth-child(2) {
+      min-width: 200px;
+    }
+
+    /* Student Name */
+    .table thead th:nth-child(3) {
+      min-width: 130px;
+    }
+
+    /* Reg. No. */
+    .table thead th.actions-cell {
+      width: 120px;
+      text-align: center;
+    }
+
+    /* Actions */
+
+
+    /* Dynamic subject headers styling - kept min-width for functional readability */
+    .table th.dynamic-subject-header {
+      min-width: 180px;
+      /* Adjust as needed for subject columns */
+      text-align: center;
+      /* Removed custom background/color */
+    }
+
+    /* Removed .table tbody tr:nth-child(even) */
+    /* Removed .table tbody tr:hover */
+
+    .subject-cell-content {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      /* Changed gap to 0 as button is removed */
+    }
+
+    .subject-cell-content input {
+      flex-grow: 1;
+      width: 100%;
+      /* Changed to 100% as button is removed */
+      padding: 8px 12px;
+      border-radius: var(--border-radius-sm);
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+    }
+
+    .subject-cell-content input:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.15rem rgba(138, 43, 226, 0.2);
+    }
+
+    .global-subject-row .col-md-1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .global-subject-row input {
+      margin-bottom: 0;
+      /* Remove default margin from input in global subject row */
+    }
+
+    /* Horizontal rule styling */
+    hr.my-4 {
+      border: none;
+      height: 3px;
+      background: linear-gradient(90deg, rgba(106, 13, 173, 0), var(--primary-color), rgba(106, 13, 173, 0));
+      border-radius: 5px;
+      margin-top: 3.5rem !important;
+      margin-bottom: 3.5rem !important;
+      opacity: 0.7;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--accent-color-1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      border-radius: 10px;
+      border: 3px solid var(--accent-color-1);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .form-section {
+        padding: 25px;
+        border-radius: var(--border-radius-md);
+      }
+
+      .table th,
+      .table td {
+        padding: 0.7rem;
+      }
+
+      h2,
+      h3,
+      h4 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+
+      h2::after,
+      h3::after {
+        width: 60px;
+        height: 3px;
+      }
+
+      .alert {
+        padding: 15px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container mt-5">
+    <h2 class="text-center text-primary mb-4">📝 Enter Class Results</h2>
+
+    <% if (msg && msg.length> 0) { %>
+      <div class="alert alert-success">
+        <p>
+          <%= msg %>
+        </p>
+      </div>
+      <% } %>
+
+        <% if ((errors && errors.length> 0) || (subjectErrors && subjectErrors.length > 0)) { %>
+          <div class="alert alert-danger">
+            <% if (errors && errors.length> 0) { %>
+              <% errors.forEach(error=> { %>
+                <p>
+                  <%= error.msg %>
+                </p>
+                <% }) %>
+                  <% } %>
+                    <% if (subjectErrors && subjectErrors.length> 0) { %>
+                      <% subjectErrors.forEach(error=> { %>
+                        <p>
+                          <%= error.msg %>
+                        </p>
+                        <% }) %>
+                          <% } %>
+          </div>
+          <% } %>
+
+            <div class="form-section mx-auto" style="max-width: 800px;">
+              <form id="filterForm" method="GET" action="/result">
+                <h4 class="text-primary mb-3">Filter Students by Class & Medium</h4>
+                <div class="mb-3">
+                  <label for="classFilter" class="form-label">Select Class</label>
+                  <select class="form-select" id="classFilter" name="studentClass" required>
+                    <option value="">-- Select Class --</option>
+                    <option value="Nursery" <%=(filteredStudentClass==='Nursery' ) ? 'selected' : '' %>>Nursery</option>
+                    <option value="LKG" <%=(filteredStudentClass==='LKG' ) ? 'selected' : '' %>>LKG</option>
+                    <option value="UKG" <%=(filteredStudentClass==='UKG' ) ? 'selected' : '' %>>UKG</option>
+                    <option value="1" <%=(filteredStudentClass==='1' ) ? 'selected' : '' %>>Class 1</option>
+                    <option value="2" <%=(filteredStudentClass==='2' ) ? 'selected' : '' %>>Class 2</option>
+                    <option value="3" <%=(filteredStudentClass==='3' ) ? 'selected' : '' %>>Class 3</option>
+                    <option value="4" <%=(filteredStudentClass==='4' ) ? 'selected' : '' %>>Class 4</option>
+                    <option value="5" <%=(filteredStudentClass==='5' ) ? 'selected' : '' %>>Class 5</option>
+                    <option value="6" <%=(filteredStudentClass==='6' ) ? 'selected' : '' %>>Class 6</option>
+                    <option value="7" <%=(filteredStudentClass==='7' ) ? 'selected' : '' %>>Class 7</option>
+                    <option value="8" <%=(filteredStudentClass==='8' ) ? 'selected' : '' %>>Class 8</option>
+                    <option value="9" <%=(filteredStudentClass==='9' ) ? 'selected' : '' %>>Class 9</option>
+                    <option value="10" <%=(filteredStudentClass==='10' ) ? 'selected' : '' %>>Class 10</option>
+                    <option value="11" <%=(filteredStudentClass==='11' ) ? 'selected' : '' %>>Class 11</option>
+                    <option value="12" <%=(filteredStudentClass==='12' ) ? 'selected' : '' %>>Class 12</option>
+                  </select>
+                </div>
+               <div class="mb-3" id="streamGroup" style="display: none;">
+  <label for="streamFilter" class="form-label">Select Stream</label>
+  <select class="form-select" id="streamFilter" name="stream">
+    <option value="">-- Select Stream --</option>
+    <option value="Arts" <%= (typeof filteredStream !== 'undefined' && filteredStream === 'Arts') ? 'selected' : '' %>>Arts</option>
+    <option value="Science" <%= (typeof filteredStream !== 'undefined' && filteredStream === 'Science') ? 'selected' : '' %>>Science</option>
+    <option value="Commerce" <%= (typeof filteredStream !== 'undefined' && filteredStream === 'Commerce') ? 'selected' : '' %>>Commerce</option>
+  </select>
+</div>
+
+
+                <div class="mb-3">
+                  <label for="mediumFilter" class="form-label">Select Medium</label>
+                  <select class="form-select" id="mediumFilter" name="medium" required>
+                    <option value="">-- Select Medium --</option>
+                    <option value="English" <%=(filteredMedium==='English' ) ? 'selected' : '' %>>English</option>
+                    <option value="Hindi" <%=(filteredMedium==='Hindi' ) ? 'selected' : '' %>>Hindi</option>
+                  </select>
+                </div>
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary">🔍 Get Students</button>
+                </div>
+              </form>
+            </div>
+
+            <% if (students && students.length> 0) { %>
+              <div class="mx-auto mt-4" style="max-width: 100%;">
+                <form id="classResultForm" method="POST" action="/result/class">
+                  <h3 class="text-primary mb-4">Enter Results for <%= filteredStudentClass %> Class (<%= filteredMedium
+                        %> Medium)</h3>
+
+                  <input type="hidden" name="studentClass" value="<%= filteredStudentClass %>">
+                <input type="hidden" name="studentClass" value="<%= filteredStudentClass %>">
+<input type="hidden" name="medium" value="<%= filteredMedium %>">
+<% if (filteredStudentClass === '11' || filteredStudentClass === '12') { %>
+  <input type="hidden" name="stream" value="<%= filteredStream || '' %>">
+<% } %>
+
+
+                  <div class="mb-3">
+                    <label for="examType" class="form-label">Exam Type (e.g., Mid Term, Final)</label>
+                    <input type="text" name="examType" id="examType" class="form-control" required
+                      value="<%= formdata && formdata.examType ? formdata.examType : '' %>">
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="session" class="form-label">Academic Session (e.g., 2023-24)</label>
+                    <input type="text" name="session" id="session" class="form-control" required
+                     value="<%= students[0].session  %>">
+                  </div>
+
+
+                  <hr class="my-4">
+
+                  <h4 class="text-secondary mb-3">Define Class Subjects (Optional)</h4>
+                  <div id="globalSubjectsContainer" class="mb-3">
+                    <div class="row g-1 mb-1 align-items-center global-subject-row">
+                      <div class="col-md-5">
+                        <input type="text" class="form-control form-control-sm global-subject-name"
+                          placeholder="Subject Name">
+                      </div>
+                      <div class="col-md-5">
+                        <input type="number" class="form-control form-control-sm global-total-marks"
+                          placeholder="Total Marks">
+                      </div>
+                      <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                          onclick="removeSubjectRow(this)">❌</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between mb-4">
+                    <button type="button" class="btn btn-outline-info" onclick="addGlobalSubjectRow()">➕ Add Global
+                      Subject</button>
+                    <button type="button" class="btn btn-warning" onclick="applySubjectsToAllStudents()">➡️ Apply
+                      Subjects to All Students</button>
+                  </div>
+                  <hr class="my-4">
+
+                  <div class="d-flex justify-content-end mb-3">
+                    <button type="button" class="btn btn-outline-info sort-button" onclick="sortTableByName()">Sort by
+                      Name</button>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="studentResultsTable">
+                      <thead>
+                        <tr id="tableHeaderRow">
+                          <th>#</th>
+                          <th>Student Name</th>
+                          <th>Reg. No.</th>
+                          <th class="actions-cell">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% students.forEach((student, index)=> { %>
+                          <tr data-student-name="<%= student.studentName %>" data-student-index="<%= index %>">
+                            <td>
+                              <%= index + 1 %>
+                            </td>
+                            <td>
+                              <%= student.studentName %>
+                            </td>
+                            <td>
+                              <%= student.registrationNo %>
+                                <input type="hidden" name="students[<%= index %>][registrationNo]"
+                                  value="<%= student.registrationNo %>">
+                            </td>
+                            <td class="actions-cell">
+                              <button type="button" class="btn btn-outline-danger btn-sm"
+                                onclick="removeStudentRow(this)">Remove</button>
+                            </td>
+                          </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-success">✅ Submit Class Results</button>
+                  </div>
+                </form>
+              </div>
+              <% } else if (filteredStudentClass && filteredMedium) { %>
+                <div class="alert alert-info text-center form-section mx-auto mt-4 forSec" style="max-width: 800px;">
+                  No students found for Class: <%= filteredStudentClass %>, Medium: <%= filteredMedium %>.
+                </div>
+                <% } %>
+
+
+                  <div class="text-center mt-4">
+                    <a href="/" class="btn btn-outline-primary">⬅ Back to Dashboard</a>
+                    <a href="/result/editResult" class="btn btn-outline-primary">📄 Edit Result</a>
+                    <a href="/result/summary" class="btn btn-outline-primary">📄 Result Summary</a>
+                    <a href="/result/marksheet" class="btn btn-outline-primary">📄 View Individual Result</a>
+                  </div>
+                  <div class="text-center mt-2 ">
+                  </div>
+  </div>
+
+  <script>
+    // Global array to keep track of subject columns for re-indexing
+    let activeSubjectColumns = [];
+
+    // Function to add a subject row in the global definition section
+    function addGlobalSubjectRow() {
+      const globalSubjectsContainer = document.getElementById('globalSubjectsContainer');
+      const row = document.createElement('div');
+      row.classList.add('row', 'g-1', 'mb-1', 'align-items-center', 'global-subject-row');
+
+      row.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" class="form-control form-control-sm global-subject-name" placeholder="Subject Name">
+            </div>
+            <div class="col-md-5">
+                <input type="number" class="form-control form-control-sm global-total-marks" placeholder="Total Marks">
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSubjectRow(this)">❌</button>
+            </div>
+        `;
+      globalSubjectsContainer.appendChild(row);
+    }
+
+    // Function to remove any subject row (global definition or individual student subject cell)
+    function removeSubjectRow(buttonElement) {
+      // If removing a global subject definition row
+      if (buttonElement.closest('.global-subject-row')) {
+        buttonElement.closest('.row').remove();
+      } else { // If removing a subject cell from a student row
+        // The button to remove individual subjects is removed as per user request.
+        // This part of the function will no longer be triggered by a button in the table.
+        // If alternative way to remove subjects per student is desired, it needs to be implemented.
+      }
+    }
+
+    // Helper to re-index subject fields for a specific student row after removal
+    function updateStudentSubjectIndexes(studentRow) {
+      const studentIndex = studentRow.dataset.studentIndex; // Get the original index
+      // Select inputs within dynamic subject cells that belong to this student
+      const subjectInputs = studentRow.querySelectorAll('.dynamic-subject-cell input[name^="students[' + studentIndex + '][subjects]"]');
+
+      let subjectCounter = 0;
+      // The pattern is obtainedMarks, name, totalMarks for each subject entry
+      for (let i = 0; i < subjectInputs.length; i += 3) {
+        const obtainedInput = subjectInputs[i];
+        const nameInput = subjectInputs[i + 1];
+        const totalInput = subjectInputs[i + 2];
+
+        obtainedInput.name = `students[${studentIndex}][subjects][${subjectCounter}][obtainedMarks]`;
+        nameInput.name = `students[${studentIndex}][subjects][${subjectCounter}][name]`;
+        totalInput.name = `students[${studentIndex}][subjects][${subjectCounter}][totalMarks]`;
+
+        subjectCounter++;
+      }
+
+    }
+
+
+    // Function to apply globally defined subjects to all students
+    function applySubjectsToAllStudents() {
+      const globalSubjectRows = document.querySelectorAll('#globalSubjectsContainer .global-subject-row');
+      const tableHeaderRow = document.getElementById('tableHeaderRow');
+      const studentRows = document.querySelectorAll('#studentResultsTable tbody tr');
+
+      if (globalSubjectRows.length === 0) {
+        alert('Please define at least one subject in the "Define Class Subjects" section first.');
+        return;
+      }
+
+      const subjectsToApply = [];
+      globalSubjectRows.forEach(row => {
+        const nameInput = row.querySelector('.global-subject-name');
+        const totalMarksInput = row.querySelector('.global-total-marks');
+        const name = nameInput.value.trim();
+        const total = totalMarksInput.value.trim();
+
+        if (name === '' || total === '' || isNaN(total)) {
+          row.classList.add('border', 'border-danger'); // Visual cue for error
+        } else {
+          row.classList.remove('border', 'border-danger');
+          subjectsToApply.push({
+            name,
+            totalMarks: total
+          });
+        }
+      });
+      if (subjectsToApply.length !== globalSubjectRows.length) {
+        alert('Please fill valid subject name and total marks before applying.');
+        return;
+      }
+
+
+      if (subjectsToApply.length === 0) {
+        alert('No valid subjects defined to apply. Please enter subject names and total marks.');
+        return;
+      }
+
+      // --- Clear existing dynamic columns and cells ---
+      // Remove old subject headers
+      const existingSubjectHeaders = tableHeaderRow.querySelectorAll('.dynamic-subject-header');
+      existingSubjectHeaders.forEach(th => th.remove());
+
+      // Remove old subject data cells from all student rows
+      studentRows.forEach(row => {
+        const existingSubjectCells = row.querySelectorAll('.dynamic-subject-cell');
+        existingSubjectCells.forEach(td => td.remove());
+      });
+
+      // --- Add new dynamic columns and cells ---
+      const actionsHeader = tableHeaderRow.querySelector('th.actions-cell'); // Find the actions header in THEAD
+      if (!actionsHeader) { // Fallback if class not immediately present (unlikely but safe)
+        actionsHeader = tableHeaderRow.querySelector('th:last-child');
+      }
+
+      subjectsToApply.forEach(subject => {
+        // Add subject header (TH)
+        const newTh = document.createElement('th');
+        newTh.classList.add('dynamic-subject-header');
+        newTh.innerHTML = `${subject.name} <br>(${subject.totalMarks})`;
+        tableHeaderRow.insertBefore(newTh, actionsHeader); // Insert before the Actions header
+
+        // Add subject data cells (TD) for each student
+        studentRows.forEach(row => {
+          const studentIndex = row.dataset.studentIndex; // Get the original index
+          const newTd = document.createElement('td');
+          newTd.classList.add('dynamic-subject-cell');
+          newTd.innerHTML = `
+                    <div class="subject-cell-content">
+                        <input type="number" class="form-control form-control-sm obtained-marks" placeholder=" Obtained Marks" required
+                            name="students[${studentIndex}][subjects][][obtainedMarks]">
+                        <input type="hidden" name="students[${studentIndex}][subjects][][name]" value="${subject.name}">
+                        <input type="hidden" name="students[${studentIndex}][subjects][][totalMarks]" value="${subject.totalMarks}">
+                    </div>
+                `;
+          // Find the correct actions cell for THIS row and insert before it
+          const currentRowActionsCell = row.querySelector('td.actions-cell');
+          row.insertBefore(newTd, currentRowActionsCell);
+        });
+      });
+
+      // Update indexes after new columns are added/removed to ensure correct array submission
+      updateAllStudentSubjectIndexes();
+
+      alert('Subjects applied to all students!');
+    }
+
+    // Call this after applying subjects or sorting
+    function updateAllStudentSubjectIndexes() {
+      const studentRows = document.querySelectorAll('#studentResultsTable tbody tr');
+      studentRows.forEach(row => {
+        updateStudentSubjectIndexes(row);
+      });
+    }
+
+    function removeStudentRow(buttonElement) {
+      const row = buttonElement.closest('tr');
+      if (confirm('Are you sure you want to remove this student from the list? Their results will not be submitted.')) {
+        row.remove();
+        // Re-index the remaining rows to maintain correct array indexing for form submission
+        updateRowIndexes();
+      }
+    }
+
+    function updateRowIndexes() {
+      const tableBody = document.querySelector('#studentResultsTable tbody');
+      const rows = Array.from(tableBody.querySelectorAll('tr'));
+      rows.forEach((row, newIndex) => {
+        // Update the display index
+        row.querySelector('td:first-child').textContent = newIndex + 1;
+
+        // Update data-student-index
+        row.dataset.studentIndex = newIndex;
+
+        // Update names of hidden input (registrationNo)
+        const regNoInput = row.querySelector('input[type="hidden"][name^="students["][name$="][registrationNo]"]');
+        if (regNoInput) {
+          regNoInput.name = `students[${newIndex}][registrationNo]`;
+        }
+
+        // Update names of subject inputs (for dynamically added subject columns)
+        const subjectInputs = row.querySelectorAll('.dynamic-subject-cell input');
+        subjectInputs.forEach(input => {
+          const oldName = input.name;
+          if (oldName) {
+            const newName = oldName.replace(/students\[\d+\]/, `students[${newIndex}]`);
+            input.name = newName;
+          }
+        });
+        // Re-index subjects for this student after updating student index
+        updateStudentSubjectIndexes(row);
+      });
+    }
+
+    let sortOrder = 1; // 1 for ascending, -1 for descending
+
+    function sortTableByName() {
+      const table = document.getElementById("studentResultsTable");
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+
+      rows.sort((a, b) => {
+        const nameA = a.dataset.studentName.toLowerCase();
+        const nameB = b.dataset.studentName.toLowerCase();
+
+        if (nameA < nameB) return -1 * sortOrder;
+        if (nameA > nameB) return 1 * sortOrder;
+        return 0;
+      });
+
+      // Clear existing rows and append sorted ones
+      rows.forEach(row => tbody.appendChild(row));
+
+      // Update the displayed index (first column) and input names after sorting
+      updateRowIndexes();
+
+      // Toggle sort order for next click
+      sortOrder *= -1;
+    }
+
+     window.addEventListener("DOMContentLoaded", () => {
+        const alert = document.querySelector(".forSec");
+        if (alert) {
+          setTimeout(() => {
+            alert.style.opacity = "0";
+            setTimeout(() => {
+              alert.style.display = "none";
+            }, 500);
+          }, 2000);
+        }
+      });
+      document.getElementById('classFilter').addEventListener('change', function () {
+  const selectedClass = this.value;
+  const streamGroup = document.getElementById('streamGroup');
+
+  if (selectedClass === '11' || selectedClass === '12') {
+    streamGroup.style.display = 'block';
+    document.getElementById('streamFilter').setAttribute('required', 'required');
+  } else {
+    streamGroup.style.display = 'none';
+    document.getElementById('streamFilter').removeAttribute('required');
+    document.getElementById('streamFilter').value = '';
+  }
+});
+
+// Automatically trigger this on load if class 11 or 12 was pre-selected
+window.addEventListener('DOMContentLoaded', () => {
+  const classSelect = document.getElementById('classFilter');
+  const streamGroup = document.getElementById('streamGroup');
+  if (classSelect.value === '11' || classSelect.value === '12') {
+    streamGroup.style.display = 'block';
+    document.getElementById('streamFilter').setAttribute('required', 'required');
+  }
+});
+
+  </script>
+
+</body>
+
+</html>

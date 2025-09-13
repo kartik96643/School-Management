@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Filter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+    #stream-group {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Filter Attendance</h2>
+    <form action="/attendance/getAttendanceData" method="POST">
+      
+      <!-- Starting Date -->
+      <div class="mb-3">
+        <label for="startDate" class="form-label">Start Date</label>
+        <input type="date" class="form-control" id="startDate" name="startDate" required>
+      </div>
+
+      <!-- End Date -->
+      <div class="mb-3">
+        <label for="endDate" class="form-label">End Date</label>
+        <input type="date" class="form-control" id="endDate" name="endDate" required>
+      </div>
+
+      <!-- Class Name -->
+      <div class="mb-3">
+        <label for="className" class="form-label">Class Name</label>
+        <select class="form-select" id="className" name="className" required>
+          <option value="">Select Class</option>
+          <option value="Nursery">Nursery</option>
+          <option value="LKG">LKG</option>
+          <option value="UKG">UKG</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+      </div>
+
+      <!-- Medium -->
+      <div class="mb-3">
+        <label for="medium" class="form-label">Medium</label>
+        <select class="form-select" id="medium" name="medium" required>
+          <option value="">Select Medium</option>
+          <option value="English">English</option>
+          <option value="Hindi">Hindi</option>
+        </select>
+      </div>
+
+      <!-- Stream (Only for class 11 & 12) -->
+      <div class="mb-3" id="stream-group">
+        <label for="stream" class="form-label">Stream</label>
+        <select class="form-select" id="stream" name="stream">
+          <option value="">Select Stream</option>
+          <option value="Science">Science</option>
+          <option value="Commerce">Commerce</option>
+          <option value="Arts">Arts</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Get Data</button>
+      <button class="btn"><a href="/" class="btn btn-primary">Back to Dashboard</a></button>
+    </form>
+  </div>
+
+  <script>
+    const classSelect = document.getElementById("className");
+    const streamGroup = document.getElementById("stream-group");
+    const streamInput = document.getElementById("stream");
+
+    classSelect.addEventListener("change", () => {
+      if (classSelect.value === "11" || classSelect.value === "12") {
+        streamGroup.style.display = "block";
+        streamInput.setAttribute("required", "true");
+      } else {
+        streamGroup.style.display = "none";
+        streamInput.removeAttribute("required");
+      }
+    });
+  </script>
+</body>
+</html>
