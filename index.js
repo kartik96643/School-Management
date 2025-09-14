@@ -34,15 +34,13 @@ connectToMongoDb(process.env.mongoURI)
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());  
 app.use(cookieParser())
+app.use(checkCookieToken('token'));
 
 // ENGINE FOR FRONTEND
 app.set('view engine','ejs');
 app.set('views',path.resolve('./views'));
 
 app.use('/admin', adminRoute);
-
-app.use(checkCookieToken('token'));
-
 app.use('/teacher', teacherRoute);
 app.use('/sessionHistory',sessionRoute);
 app.use('/exam-timetable', timetableRoute);
