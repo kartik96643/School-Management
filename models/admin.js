@@ -57,7 +57,7 @@ adminSchema.pre('save', function (next) {
     // if(!password.isModified()) return null;
     if (!admin.isModified('password')) return next();
 
-    const salt = randomBytes(16).toString();
+    const salt = randomBytes(16).toString("hex");
     const hashedPassword = createHmac('sha256', salt).update(admin.password).digest('hex');
 
     // this.salt = salt;
@@ -87,7 +87,7 @@ adminSchema.static('matchPassAndGenerateToken', async (email, password) => {
         const hashedPassword = admin.password;
         // console.log(hashedPassword)
 
-        const providedPassword = await createHmac('sha256', salt).update(password).digest('hex');
+        const providedPassword = createHmac('sha256', salt).update(password).digest('hex');
 
         if (providedPassword !== hashedPassword) throw new Error("Invalid Password");
         // console.log(admin)
